@@ -32,7 +32,7 @@ jobs:
           # Directory (relative to the root of your Git repo) that contains the .c4zproj to build
           projectDir: './src/88/'
           # Filename for the c4z project to build
-          c4zproj: 'AMX_PRECIS_DSP_8x8.c4zproj"'
+          c4zproj: 'AMX_PRECIS_DSP_8x8.c4zproj'
           # Directory (relative to projectDir) to output the built c4z file to
           # Defaults to the parent directory ('./../')
           outputDir: './bin'
@@ -42,7 +42,7 @@ jobs:
           # Directory (relative to the root of your Git repo) that contains the .c4zproj to build
           projectDir: './src/1818/'
           # Filename for the c4z project to build
-          c4zproj: 'AMX_PRECIS_DSP_18x18.c4zproj"'
+          c4zproj: 'AMX_PRECIS_DSP_18x18.c4zproj'
           # Directory (relative to projectDir) to output the built c4z file to
           # Defaults to the parent directory ('./../')
           outputDir: './bin'
