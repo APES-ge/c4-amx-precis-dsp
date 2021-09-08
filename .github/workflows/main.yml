@@ -26,6 +26,25 @@ jobs:
         uses: actions/checkout@master
       - name: Checkout submodules
         uses: textbook/git-checkout-submodule-action@master
-      - name: Build
-        run: build.sh
+      - name: Build 8x8
+        uses: control4/drivers-driverpackager@v1
+        with:
+          # Directory (relative to the root of your Git repo) that contains the .c4zproj to build
+          projectDir: './src/88/'
+          # Filename for the c4z project to build
+          c4zproj: 'AMX PRECIS DSP 8x8.c4zproj'
+          # Directory (relative to projectDir) to output the built c4z file to
+          # Defaults to the parent directory ('./../')
+          outputDir: './bin'
+      - name: Build 18x18
+        uses: control4/drivers-driverpackager@v1
+        with:
+          # Directory (relative to the root of your Git repo) that contains the .c4zproj to build
+          projectDir: './src/1818/'
+          # Filename for the c4z project to build
+          c4zproj: 'AMX PRECIS DSP 18x18.c4zproj'
+          # Directory (relative to projectDir) to output the built c4z file to
+          # Defaults to the parent directory ('./../')
+          outputDir: './bin'
+          
           
