@@ -1,0 +1,40 @@
+﻿<Driver type="c4z" name="AMX AVS-PL-1818-OOP (18x18)" squishLua="true" manualsquish="true">
+ <Items>
+  <Item type="dir" c4zDir="shared" name="..\shared" recurse="true" exclude="false" />
+  <Item type="file" name="driver.lua" />
+  <Item type="file" name="driver.xml" />
+ </Items>
+ <Squishy>
+  <File>..\shared\actions.lua</File>
+  <File>..\shared\avswitch_init.lua</File>
+  <File>..\shared\av_path.lua</File>
+  <File>..\shared\connections.lua</File>
+  <File>..\shared\receiver.lua</File>
+  <File>..\shared\sender.lua</File>
+  <File>..\shared\properties.lua</File>
+  <File>..\shared\proxy_commands.lua</File>
+  <File>..\shared\avswitch\avswitch_proxy_class.lua</File>
+  <File>..\shared\avswitch\avswitch_proxy_commands.lua</File>
+  <File>..\shared\avswitch\avswitch_proxy_notifies.lua</File>
+  <File>..\shared\common\c4_command.lua</File>
+  <File>..\shared\common\c4_common.lua</File>
+  <File>..\shared\common\c4_conditional.lua</File>
+  <File>..\shared\common\c4_device_connection_base.lua</File>
+  <File>..\shared\common\c4_diagnostics.lua</File>
+  <File>..\shared\common\c4_driver_declarations.lua</File>
+  <File>..\shared\common\c4_init.lua</File>
+  <File>..\shared\common\c4_ir_connection.lua</File>
+  <File>..\shared\common\c4_networkserver_connection.lua</File>
+  <File>..\shared\common\c4_network_connection.lua</File>
+  <File>..\shared\common\c4_notify.lua</File>
+  <File>..\shared\common\c4_property.lua</File>
+  <File>..\shared\common\c4_serial_connection.lua</File>
+  <File>..\shared\common\c4_url_connection.lua</File>
+  <File>..\shared\common\c4_utils.lua</File>
+  <File>..\shared\lib\c4_log.lua</File>
+  <File>..\shared\lib\c4_object.lua</File>
+  <File>..\shared\lib\c4_queue.lua</File>
+  <File>..\shared\lib\c4_timer.lua</File>
+  <File>..\shared\lib\c4_xml.lua</File>
+ </Squishy>
+</Driver>

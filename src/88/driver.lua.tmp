@@ -1,0 +1,70 @@
+--[[=============================================================================
+    Main driver for 8x8 DSP
+
+    Copyright 2021 AP Engineering LLC. All Rights Reserved.
+===============================================================================]]------------
+require "shared.common.c4_driver_declarations"
+require "shared.common.c4_common"
+require "shared.common.c4_init"
+require "shared.common.c4_property"
+require "shared.common.c4_command"
+require "shared.common.c4_notify"
+require "shared.common.c4_network_connection"
+require "shared.common.c4_serial_connection"
+require "shared.common.c4_ir_connection"
+require "shared.common.c4_utils"
+require "shared.lib.c4_timer"
+require "actions"
+require "device_specific_commands"
+require "device_messages"
+require "avswitch_init"
+require "properties"
+require "proxy_commands"
+require "connections"
+require "avswitch.avswitch_proxy_class"
+require "avswitch.avswitch_proxy_commands"
+require "avswitch.avswitch_proxy_notifies"
+require "av_path"
+
+
+-- This macro is utilized to identify the version string of the driver template version used.
+if (TEMPLATE_VERSION ~= nil) then
+	TEMPLATE_VERSION.driver = "2015.03.31"
+end
+
+--[[=============================================================================
+    Constants
+===============================================================================]]
+AVSWITCH_PROXY_BINDINGID = 5001
+MIN_DEVICE_LEVEL = -70
+MAX_DEVICE_LEVEL = 10	
+MIN_EQ_LEVEL = -24
+MAX_EQ_LEVEL = 24	
+MIN_BALANCE_LEVEL = -100
+MAX_BALANCE_LEVEL = 100
+IO_COUNT = 8
+
+--[[=============================================================================
+    Initialization Code
+===============================================================================]]
+function ON_DRIVER_EARLY_INIT.main()
+	
+end
+
+function ON_DRIVER_INIT.main()
+
+end
+
+function ON_DRIVER_LATEINIT.main()
+    C4:urlSetTimeout (20) 
+    LOG:SetLogName("AMX PRECIS DSP 8x8")
+end
+
+
+--[[=============================================================================
+    Driver Code
+===============================================================================]]
+
+C4:AllowExecute(true)
+
+gIsDevelopmentVersionOfDriver = true
