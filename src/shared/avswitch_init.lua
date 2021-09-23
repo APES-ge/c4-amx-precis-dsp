@@ -75,11 +75,11 @@ function PROTOCOL_DECLARATIONS.InputOutputTableInit()
 	LogTrace("PROTOCOL_DECLARATIONS.InputOutputTableInit() with I/O ".. IO_COUNT)
 	----------------------------------------- [*COMMAND/RESPONSE HELPER TABLES*] -----------------------------------------
 	for i = 1, IO_COUNT, 1 do
-		tInputCommandMap[3000 + i] = tostring(i)
-		tInputConnMapByID[3000 + i] = {Name = "Input "..tostring(i) ,BindingID = AVSWITCH_PROXY_BINDINGID,}
-		tInputConnMapByName["Input "..tostring(i)] = {ID = 3000+i,BindingID = AVSWITCH_PROXY_BINDINGID,}
-		tOutputCommandMap[4000 + i] = tostring(i)
-		tOutputConnMap[4000 + 1] = "Output "..tostring(i)
+		tInputCommandMap[2999 + i] = tostring(i)
+		tInputConnMapByID[2999 + i] = {Name = "Input "..tostring(i) ,BindingID = AVSWITCH_PROXY_BINDINGID,}
+		tInputConnMapByName["Input "..tostring(i)] = {ID = 2999+i,BindingID = AVSWITCH_PROXY_BINDINGID,}
+		tOutputCommandMap[3999 + i] = tostring(i)
+		tOutputConnMap[3999 + i] = "Output "..tostring(i)
 	end
 	tInputIdByNum = ReverseTable(tInputCommandMap)
 	tOutputIdByNum = ReverseTable(tOutputCommandMap)

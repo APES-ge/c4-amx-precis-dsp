@@ -1,5 +1,5 @@
 <devicedata>
-  <version>1</version>
+  <version>3</version>
   <manufacturer>AMX</manufacturer>
   <model>AVS-PL-0808-OOP (8x8)</model>
   <search_type>c4:av_gen</search_type>
@@ -73,6 +73,14 @@
           <item>Print</item>
           <item>Log</item>
           <item>Print and Log</item>
+        </items>
+      </property>
+      <property>
+        <name>Output EQ Help</name>
+        <type>LIST</type>
+        <default>Valid values are from -12 dB to 12 dB (in 0.5 dB increments)</default>
+        <items>
+          <item>Valid values are from -12 dB to 12 dB (in 0.5 dB increments)</item>
         </items>
       </property>
       <property>
@@ -161,6 +169,14 @@
         <maximum>12</maximum>
       </property>
       <property>
+        <name>Input Gain Help</name>
+        <type>LIST</type>
+        <default>Valid values are from -10 dB to +10 dB (in 0.5 dB increments)</default>
+        <items>
+          <item>Valid values are from -10 dB to +10 dB (in 0.5 dB increments)</item>
+        </items>
+      </property>
+      <property>
         <name>Input Gain</name>
         <type>LIST</type>
         <default>Input 1</default>
@@ -220,7 +236,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>3001</id>
+      <id>3000</id>
       <audiosource>false</audiosource>
       <videosource>false</videosource>
       <connectionname>Input 1</connectionname>
@@ -235,7 +251,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>3002</id>
+      <id>3001</id>
       <audiosource>false</audiosource>
       <videosource>false</videosource>
       <connectionname>Input 2</connectionname>
@@ -250,7 +266,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>3003</id>
+      <id>3002</id>
       <audiosource>false</audiosource>
       <videosource>false</videosource>
       <connectionname>Input 3</connectionname>
@@ -265,7 +281,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>3004</id>
+      <id>3003</id>
       <audiosource>false</audiosource>
       <videosource>false</videosource>
       <connectionname>Input 4</connectionname>
@@ -280,7 +296,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>3005</id>
+      <id>3004</id>
       <audiosource>false</audiosource>
       <videosource>false</videosource>
       <connectionname>Input 5</connectionname>
@@ -295,7 +311,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>3006</id>
+      <id>3005</id>
       <audiosource>false</audiosource>
       <videosource>false</videosource>
       <connectionname>Input 6</connectionname>
@@ -310,7 +326,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>3007</id>
+      <id>3006</id>
       <audiosource>false</audiosource>
       <videosource>false</videosource>
       <connectionname>Input 7</connectionname>
@@ -325,7 +341,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>3008</id>
+      <id>3007</id>
       <audiosource>false</audiosource>
       <videosource>false</videosource>
       <connectionname>Input 8</connectionname>
@@ -340,7 +356,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>4001</id>
+      <id>4000</id>
       <audiosource>true</audiosource>
       <videosource>false</videosource>
       <connectionname>Output 1</connectionname>
@@ -355,7 +371,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>4002</id>
+      <id>4001</id>
       <audiosource>true</audiosource>
       <videosource>false</videosource>
       <connectionname>Output 2</connectionname>
@@ -370,7 +386,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>4003</id>
+      <id>4002</id>
       <audiosource>true</audiosource>
       <videosource>false</videosource>
       <connectionname>Output 3</connectionname>
@@ -385,7 +401,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>4004</id>
+      <id>4003</id>
       <audiosource>true</audiosource>
       <videosource>false</videosource>
       <connectionname>Output 4</connectionname>
@@ -400,7 +416,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>4005</id>
+      <id>4004</id>
       <audiosource>true</audiosource>
       <videosource>false</videosource>
       <connectionname>Output 5</connectionname>
@@ -415,7 +431,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>4006</id>
+      <id>4005</id>
       <audiosource>true</audiosource>
       <videosource>false</videosource>
       <connectionname>Output 6</connectionname>
@@ -430,7 +446,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>4007</id>
+      <id>4006</id>
       <audiosource>true</audiosource>
       <videosource>false</videosource>
       <connectionname>Output 7</connectionname>
@@ -445,7 +461,7 @@
     </connection>
     <connection proxybindingid="5001">
       <type>6</type>
-      <id>4008</id>
+      <id>4007</id>
       <audiosource>true</audiosource>
       <videosource>false</videosource>
       <connectionname>Output 8</connectionname>
@@ -459,7 +475,7 @@
       </classes>
     </connection>
     <connection proxybindingid="5001">
-      <id>7001</id>
+      <id>7000</id>
       <connectionname>Room 1</connectionname>
       <facing>6</facing>
       <type>7</type>
@@ -475,7 +491,7 @@
       </classes>
     </connection>
     <connection proxybindingid="5001">
-      <id>7002</id>
+      <id>7001</id>
       <connectionname>Room 2</connectionname>
       <facing>6</facing>
       <type>7</type>
@@ -491,7 +507,7 @@
       </classes>
     </connection>
     <connection proxybindingid="5001">
-      <id>7003</id>
+      <id>7002</id>
       <connectionname>Room 3</connectionname>
       <facing>6</facing>
       <type>7</type>
@@ -507,7 +523,7 @@
       </classes>
     </connection>
     <connection proxybindingid="5001">
-      <id>7004</id>
+      <id>7003</id>
       <connectionname>Room 4</connectionname>
       <facing>6</facing>
       <type>7</type>
@@ -523,7 +539,7 @@
       </classes>
     </connection>
     <connection proxybindingid="5001">
-      <id>7005</id>
+      <id>7004</id>
       <connectionname>Room 5</connectionname>
       <facing>6</facing>
       <type>7</type>
@@ -539,7 +555,7 @@
       </classes>
     </connection>
     <connection proxybindingid="5001">
-      <id>7006</id>
+      <id>7005</id>
       <connectionname>Room 6</connectionname>
       <facing>6</facing>
       <type>7</type>
@@ -555,7 +571,7 @@
       </classes>
     </connection>
     <connection proxybindingid="5001">
-      <id>7007</id>
+      <id>7006</id>
       <connectionname>Room 7</connectionname>
       <facing>6</facing>
       <type>7</type>
@@ -571,7 +587,7 @@
       </classes>
     </connection>
     <connection proxybindingid="5001">
-      <id>7008</id>
+      <id>7007</id>
       <connectionname>Room 8</connectionname>
       <facing>6</facing>
       <type>7</type>

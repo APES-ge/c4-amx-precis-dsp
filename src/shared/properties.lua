@@ -47,8 +47,8 @@ function OnPropertyChanged(sProperty)
 end
 
 function ON_PROPERTY_CHANGED.OutputEQ(propertyValue)
-	local output = tonumber(tOutputCommandMap[propertyValue] % 1000)
-	LogTrace("EQ for ".. propertyValue .. "[" .. output .. "]" .. "was selected")
+	local output = tonumber(tOutputCommandMap[propertyValue] % 1000) - 1
+	LogTrace("EQ for ".. propertyValue .. "[" .. output .. "]" .. " was selected")
 	gSelectedEqOutput = output
 	GET_EQ_LEVEL(output)
 	UpdateEqGainProperties()
@@ -58,7 +58,9 @@ function UpdateEqGainProperties()
 	if(gSelectedEqOutput == -1) then return end
 	if(gEqLevels[gSelectedEqOutput] ~= nil) then
 		for key, value in ipairs(gEqLevels[gSelectedEqOutput]) do
-			UpdateProperty(eqNames[key], value)
+			if(key ~= nil) then
+				UpdateProperty(eqNames[key], value)
+			end
 		end
 	end
 end
@@ -70,8 +72,8 @@ function SetEqGain()
 end
 
 function ON_PROPERTY_CHANGED.InputGain(propertyValue)
-	local input = tonumber(tInputCommandMap[propertyValue] % 1000)
-	LogTrace("Gain for ".. propertyValue .. "[" .. input .. "]" .. "was selected")
+	local input = tonumber(tInputCommandMap[propertyValue] % 1000) - 1
+	LogTrace("Gain for ".. propertyValue .. "[" .. input .. "]" .. " was selected")
 	gSelectedGainInput = input
 	GET_GAIN_LEVEL(input)
 	UpdateInputGainProperties()
@@ -88,7 +90,7 @@ function UpdateInputGainProperties()
 end
 
 function ON_PROPERTY_CHANGED.Gain(propertyValue)
-	LogTrace("Gain for ".. "[" .. gSelectedGainInput .. "]" .. "was changed to ".. propertyValue)
+	LogTrace("Gain for ".. "[" .. gSelectedGainInput .. "]" .. " was changed to ".. propertyValue)
 	if(gSelectedGainInput == -1) then return end
 	SET_GAIN_LEVEL(gSelectedGainInput, tonumber(propertyValue))
 end

@@ -8,6 +8,11 @@
 ===============================================================================]]
 
 
+function DISCONNECT_OUTPUT(output, class, output_id)
+	local command;
+	command = "DL2O" .. tostring(output + 1) .. "T"
+	SendToTransport(command)
+end
 function SET_INPUT(idBinding, output, input, input_id, class, output_id, bSwitchSeparate, bVideo, bAudio)
 	 if (gAVSwitchProxy._PreviouslySelectedInput[output] == input) then return end
 	ROUTE(input, output)
@@ -16,14 +21,14 @@ end
 function ROUTE(input, output)
 	local command;
 	gOutputToInputMap[output] = input
-	command = "CL2I"..string.format( "%d",input ).."O".. string.format( "%d", output).."T"
+	command = "CL2I"..string.format( "%d",input + 1 ).."O".. string.format( "%d", output + 1).."T"
 	SendToTransport(command)
 	proxyFeedbackRoutingState(3000 + input,4000 + output)
 end
 
 function MUTE_OFF(output)
 	local command
-	command = "CL2O"..tostring(output).."VUT"
+	command = "CL2O"..tostring(output + 1).."VUT"
 	SendToTransport(command)
 	gOutputMute[output]=false
 	GET_VOLUME_LEVEL(output)
@@ -31,7 +36,7 @@ end
 
 function MUTE_ON(output)
 	local command
-	command = "CL2O"..tostring(output).."VMT"
+	command = "CL2O"..tostring(output + 1).."VMT"
 	SendToTransport(command)		
 	gOutputMute[output]=true
 	GET_VOLUME_LEVEL(output)
@@ -46,20 +51,18 @@ function MUTE_TOGGLE(output)
 end
 
 function SET_GAIN_LEVEL(input, c4VolumeLevel)
-	local minDeviceLevel = MIN_GAIN_LEVEL
-	local maxDeviceLevel = MAX_GAIN_LEVEL
-	local deviceGainLevel = ConvertVolumeToDevice(c4VolumeLevel, minDeviceLevel, maxDeviceLevel)*10
+	local deviceGainLevel = c4VolumeLevel*10
 	LogInfo('deviceGainLevel: ' .. deviceGainLevel)
-	local command = "CL2I".. tostring(input).."VA"..tostring(deviceGainLevel).."T"
+	local command = "CL2I".. tostring(input + 1).."VA"..tostring(deviceGainLevel).."T"
 	SendToTransport(command)
 end
 function GET_GAIN_LEVEL(input)
-	local command = "SL2I".. tostring(input).."VT"
+	local command = "SL2I".. tostring(input + 1).."VT"
 	SendToTransport(command)
 end
 
 function SetVolumeCommand(output, volume)
-    return "CL2O".. tostring(output).."VA"..tostring(volume*10).."T"
+    return "CL2O".. tostring(output+1).."VA"..tostring(volume*10).."T"
 end
 
 function SET_VOLUME_LEVEL(output, c4VolumeLevel)
@@ -71,7 +74,7 @@ function SET_VOLUME_LEVEL(output, c4VolumeLevel)
 	SendToTransport(command)
 end
 function GET_VOLUME_LEVEL(output)
-	local command = "SL2O"..tostring(output).."VT"
+	local command = "SL2O"..tostring(output+1).."VT"
 	SendToTransport(command)
 end
 
@@ -81,52 +84,52 @@ function SET_VOLUME_LEVEL_DEVICE(output, deviceVolumeLevel)
 end
 
 function PULSE_VOL_DOWN(output)
-	local command = "CL2O"..tostring(output).."VS-T"
+	local command = "CL2O"..tostring(output+1).."VS-T"
 	SendToTransport(command)
 	GetDeviceVolumeStatus(output)
 end
 
 function PULSE_VOL_UP(output)
-	local command = "CL2O"..tostring(output).."VS+T"	
+	local command = "CL2O"..tostring(output+1).."VS+T"	
 	SendToTransport(command)
 	GetDeviceVolumeStatus(output)
 end
 
 function GetDeviceVolumeStatus(output)
     LogTrace("GetDeviceVolumeStatus(), output = " .. output)
-	local command = "SL2O"..tostring(output).."VT"
+	local command = "SL2O"..tostring(output+1).."VT"
 	SendToTransport(command)
 end
 
 function GET_INPUT(output)
-    SendToTransport("GET_INPUT", "SL2O".. string.format( "%d", output).."T")
+    SendToTransport("GET_INPUT", "SL2O".. string.format( "%d", output+1).."T")
 end
 
 function SET_BASS_LEVEL(output, c4Level)
 	local minDeviceLevel = MIN_EQ_LEVEL
 	local maxDeviceLevel = MAX_EQ_LEVEL
-	local deviceEqLevel = ConvertVolumeToDevice(c4Level, minDeviceLevel, maxDeviceLevel) / 2
+	local deviceEqLevel = ConvertVolumeToDevice(c4Level, minDeviceLevel, maxDeviceLevel) / 2 * 10
 	LogTrace('deviceEqLevel: ' .. deviceEqLevel)
-	local command = "CL2O"..tostring(output).."F1G"..tostring(deviceEqLevel).."T"
+	local command = "CL2O"..tostring(output+1).."F1G"..tostring(deviceEqLevel).."T"
 	SendToTransport(command)
 end
 
 function GET_BASS_LEVEL(output)
-	local command = "SL2O"..tostring(output).."F1T"
+	local command = "SL2O"..tostring(output+1).."F1T"
 	SendToTransport(command)
 end
 
 function SET_TREBLE_LEVEL(output, c4Level)
 	local minDeviceLevel = MIN_EQ_LEVEL
 	local maxDeviceLevel = MAX_EQ_LEVEL
-	local deviceEqLevel = ConvertVolumeToDevice(c4Level, minDeviceLevel, maxDeviceLevel) / 2
+	local deviceEqLevel = (ConvertVolumeToDevice(c4Level, minDeviceLevel, maxDeviceLevel) / 2) * 10
 	LogTrace('deviceEqLevel: ' .. deviceEqLevel)
-	local command = "CL2O"..tostring(output).."F3G"..tostring(deviceEqLevel).."T"
+	local command = "CL2O"..tostring(output+1).."F3G"..tostring(deviceEqLevel).."T"
 	SendToTransport(command)
 end
 
 function GET_TREBLE_LEVEL(output)
-	local command = "SL2O"..tostring(output).."F3T"
+	local command = "SL2O"..tostring(output+1).."F3T"
 	SendToTransport(command)
 end
 
@@ -135,17 +138,17 @@ function SET_BALANCE_LEVEL(output, c4Level)
 	local maxDeviceLevel = MAX_BALANCE_LEVEL
 	local deviceBalanceLevel = ConvertVolumeToDevice(c4Level, minDeviceLevel, maxDeviceLevel) 
 	LogTrace('deviceBalanceLevel: ' .. deviceBalanceLevel)
-	local command = "CL2O"..tostring(output).."P"..tostring(deviceBalanceLevel).."T"
+	local command = "CL2O"..tostring(output+1).."P"..tostring(deviceBalanceLevel).."T"
 	SendToTransport(command)
 end
 
 function GET_BALANCE_LEVEL(output)
-	local command = "SL2O"..tostring(output).."PT"
+	local command = "SL2O"..tostring(output+1).."PT"
 	SendToTransport(command)
 end
 
 function GET_BALANCE_LEVEL(output)
-	local command = "SL2O"..tostring(output).."PT"
+	local command = "SL2O"..tostring(output+1).."PT"
 	SendToTransport(command)
 end
 
@@ -155,12 +158,12 @@ function SET_EQ_LEVEL(output, bands)
 		deviceEqLevel = deviceEqLevel .. tostring(bands[i] * 10) .. " "
 	end
 	LogTrace('deviceEqLevel: ' .. deviceEqLevel)
-	local command = "CL2O"..tostring(output).."E1 2 3 4 5 6 7 8 9 10G"..deviceEqLevel.."T"
+	local command = "CL2O"..tostring(output+1).."E1 2 3 4 5 6 7 8 9 10G"..deviceEqLevel.."T"
 	SendToTransport(command)
 end
 
 function GET_EQ_LEVEL(output)
-	local command = "SL2O"..tostring(output).."E1 2 3 4 5 6 7 8 9 10T"
+	local command = "SL2O"..tostring(output+1).."E1 2 3 4 5 6 7 8 9 10T"
 	SendToTransport(command)
 end
 

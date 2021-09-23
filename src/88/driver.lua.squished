@@ -104,11 +104,11 @@ function PROTOCOL_DECLARATIONS.InputOutputTableInit()
 	LogTrace("PROTOCOL_DECLARATIONS.InputOutputTableInit() with I/O ".. IO_COUNT)
 	----------------------------------------- [*COMMAND/RESPONSE HELPER TABLES*] -----------------------------------------
 	for i = 1, IO_COUNT, 1 do
-		tInputCommandMap[3000 + i] = tostring(i)
-		tInputConnMapByID[3000 + i] = {Name = "Input "..tostring(i) ,BindingID = AVSWITCH_PROXY_BINDINGID,}
-		tInputConnMapByName["Input "..tostring(i)] = {ID = 3000+i,BindingID = AVSWITCH_PROXY_BINDINGID,}
-		tOutputCommandMap[4000 + i] = tostring(i)
-		tOutputConnMap[4000 + 1] = "Output "..tostring(i)
+		tInputCommandMap[2999 + i] = tostring(i)
+		tInputConnMapByID[2999 + i] = {Name = "Input "..tostring(i) ,BindingID = AVSWITCH_PROXY_BINDINGID,}
+		tInputConnMapByName["Input "..tostring(i)] = {ID = 2999+i,BindingID = AVSWITCH_PROXY_BINDINGID,}
+		tOutputCommandMap[3999 + i] = tostring(i)
+		tOutputConnMap[3999 + i] = "Output "..tostring(i)
 	end
 	tInputIdByNum = ReverseTable(tInputCommandMap)
 	tOutputIdByNum = ReverseTable(tOutputCommandMap)
@@ -592,7 +592,9 @@ changeGeneralErrorPattern =  "(.*X)"
 errorPattern =  "(E%d*)"
 warningPattern =  "(E%d*)"
 readyPattern = "Ready"
+setDisconnectedPattern = "DL2O(%d*)T"
 setRoutingSucceedPattern =  "CL2I(%d*)O(%d*)T"
+getRoutingDisconnectedPattern = "SL2O(%d*)T%( %)"
 getRoutingSucceedPattern =  "SL2O(%d*)T%( (%d*) %)"
 setVolumeSucceedPattern =  "CL2O(%d*)VA(-?%d*)T"
 getVolumeSucceedPattern =  "SL2O(%d*)VT%( (-?%d*) %)"
@@ -645,34 +647,42 @@ function HandleMessage(message)
 		LogWarn("Command general error ".. message)
 	elseif(message:find(readyPattern)) then
 		PollStatus()
+	elseif(message:find(setDisconnectedPattern)) then
+		LogDebug("Found disconnected pattern")
+		local  o = message:match(setDisconnectedPattern)
+		proxyFeedbackRoutingState(-1 , 3999 + o)
 	elseif(message:find(setRoutingSucceedPattern)) then
 		LogDebug("Found routing succeed pattern")
 		local  i, o = message:match(setRoutingSucceedPattern)
-		proxyFeedbackRoutingState(3000 + i, 4000 + o)
+		proxyFeedbackRoutingState(2999 + i, 3999 + o)
+	elseif(message:find(getRoutingDisconnectedPattern)) then
+		LogDebug("Found routing disconnected feedback pattern")
+		local  o = message:match(getRoutingDisconnectedPattern)
+		proxyFeedbackRoutingState(-1 , 3999 + o)
 	elseif(message:find(getRoutingSucceedPattern)) then
 		LogDebug("Found routing feedback pattern")
-		local  i, o = message:match(getRoutingSucceedPattern)
-		proxyFeedbackRoutingState(3000 + i, 4000 + o)
+		local  o, i = message:match(getRoutingSucceedPattern)
+		proxyFeedbackRoutingState(2999 + i, 3999 + o)
 	elseif(message:find(setVolumeSucceedPattern)) then
 		LogDebug("Found volume succeed pattern")
 		local  o, v = message:match(setVolumeSucceedPattern)
-		proxyFeedbackVolumeState(4000 + o, v)
+		proxyFeedbackVolumeState(3999 + o, v)
 	elseif(message:find(getVolumeMutedPattern)) then
 		LogDebug("Found volume muted feedback pattern")
 		local  o = message:match(getVolumeMutedPattern)
-		proxyFeedbackVolumeMuted(o, true)
+		proxyFeedbackVolumeMuted(3999 + o, true)
 	elseif(message:find(getVolumeSucceedPattern)) then
 		LogDebug("Found volume feedback pattern")
 		local  o, v = message:match(getVolumeSucceedPattern)
-		proxyFeedbackVolumeState(4000 + o, v)
+		proxyFeedbackVolumeState(3999 + o, v)
 	elseif(message:find(setGainSucceedPattern)) then
 		LogDebug("Found gain succeed pattern")
 		local  i, v = message:match(setGainSucceedPattern)
-		proxyFeedbackGainState(i, v)
+		proxyFeedbackGainState(i-1, v)
 	elseif(message:find(getGainSucceedPattern)) then
 		LogDebug("Found gain feedback pattern")
 		local  i, v = message:match(getGainSucceedPattern)
-		proxyFeedbackGainState(i, v)
+		proxyFeedbackGainState(i-1, v)
 	elseif(message:find(getEqPattern)) then
 		LogDebug("Found EQ feedback pattern")
 		local o, e32, e64, e125, e250,e500,e1k,e2k,e4k,e8k,e16k = message:match(getEqPattern)
@@ -688,27 +698,27 @@ function HandleMessage(message)
 	elseif(message:find(setBassPattern)) then
 		LogDebug("Found set bass succeed pattern")
 		local o, v = message:match(setBassPattern)
-		proxyBassState(o,v)
+		proxyBassState(o-1,v)
 	elseif(message:find(getBassPattern)) then
 		LogDebug("Found set bass succeed pattern")
 		local o, v = message:match(getBassPattern)
-		proxyBassState(o,v)
+		proxyBassState(o-1,v)
 	elseif(message:find(setTreblePattern)) then
 		LogDebug("Found set treble succeed pattern")
 		local o, v = message:match(setTreblePattern)
-		proxyTrebleState(o,v)
+		proxyTrebleState(o-1,v)
 	elseif(message:find(getTreblePattern)) then
 		LogDebug("Found get treble succeed pattern")
 		local o, v = message:match(getTreblePattern)
-		proxyTrebleState(o,v)
+		proxyTrebleState(o-1,v)
 	elseif(message:find(setPanPattern)) then
 		LogDebug("Found set pan succeed pattern")
 		local o, v = message:match(setPanPattern)
-		proxyPanState(o,v)
+		proxyPanState(o-1,v)
 	elseif(message:find(setPanPattern)) then
 		LogDebug("Found get pan succeed pattern")
 		local o, v = message:match(setPanPattern)
-		proxyPanState(o,v)
+		proxyPanState(o-1,v)
 	end
 end
 
@@ -733,7 +743,7 @@ end
 function proxyBassState(output_id, volume)
 	local minDeviceLevel = MIN_EQ_LEVEL
 	local maxDeviceLevel = MAX_EQ_LEVEL
-	local scaledVolume = volume / 20
+	local scaledVolume = (volume * 2) / 10
 	local c4VolumeLevel = ConvertVolumeToC4(scaledVolume, minDeviceLevel, maxDeviceLevel) 	 
 	gAVSwitchProxy:dev_BassLevelChanged(output_id, c4VolumeLevel)
 end
@@ -741,7 +751,7 @@ end
 function proxyTrebleState(output_id, volume)
 	local minDeviceLevel = MIN_EQ_LEVEL
 	local maxDeviceLevel = MAX_EQ_LEVEL
-	local scaledVolume = volume / 20
+	local scaledVolume = (volume * 2) / 10
 	local c4VolumeLevel = ConvertVolumeToC4(scaledVolume, minDeviceLevel, maxDeviceLevel) 	 
 	gAVSwitchProxy:dev_TrebleLevelChanged(output_id, c4VolumeLevel)
 end
@@ -749,8 +759,9 @@ end
 function proxyPanState(output_id, volume)
 	local minDeviceLevel = MIN_BALANCE_LEVEL
 	local maxDeviceLevel = MAX_BALANCE_LEVEL
-	local scaledVolume = volume / 10
-	local c4VolumeLevel = ConvertVolumeToC4(scaledVolume, minDeviceLevel, maxDeviceLevel) 	 
+	-- local scaledVolume = volume / 10
+	-- local c4VolumeLevel = ConvertVolumeToC4(scaledVolume, minDeviceLevel, maxDeviceLevel) 	 
+	local c4VolumeLevel = ConvertVolumeToC4(volume, minDeviceLevel, maxDeviceLevel) 	 
 	gAVSwitchProxy:dev_BalanceLevelChanged(output_id, c4VolumeLevel)
 end
 
@@ -842,8 +853,8 @@ function OnPropertyChanged(sProperty)
 end
 
 function ON_PROPERTY_CHANGED.OutputEQ(propertyValue)
-	local output = tonumber(tOutputCommandMap[propertyValue] % 1000)
-	LogTrace("EQ for ".. propertyValue .. "[" .. output .. "]" .. "was selected")
+	local output = tonumber(tOutputCommandMap[propertyValue] % 1000) - 1
+	LogTrace("EQ for ".. propertyValue .. "[" .. output .. "]" .. " was selected")
 	gSelectedEqOutput = output
 	GET_EQ_LEVEL(output)
 	UpdateEqGainProperties()
@@ -853,7 +864,9 @@ function UpdateEqGainProperties()
 	if(gSelectedEqOutput == -1) then return end
 	if(gEqLevels[gSelectedEqOutput] ~= nil) then
 		for key, value in ipairs(gEqLevels[gSelectedEqOutput]) do
-			UpdateProperty(eqNames[key], value)
+			if(key ~= nil) then
+				UpdateProperty(eqNames[key], value)
+			end
 		end
 	end
 end
@@ -865,8 +878,8 @@ function SetEqGain()
 end
 
 function ON_PROPERTY_CHANGED.InputGain(propertyValue)
-	local input = tonumber(tInputCommandMap[propertyValue] % 1000)
-	LogTrace("Gain for ".. propertyValue .. "[" .. input .. "]" .. "was selected")
+	local input = tonumber(tInputCommandMap[propertyValue] % 1000) - 1
+	LogTrace("Gain for ".. propertyValue .. "[" .. input .. "]" .. " was selected")
 	gSelectedGainInput = input
 	GET_GAIN_LEVEL(input)
 	UpdateInputGainProperties()
@@ -883,7 +896,7 @@ function UpdateInputGainProperties()
 end
 
 function ON_PROPERTY_CHANGED.Gain(propertyValue)
-	LogTrace("Gain for ".. "[" .. gSelectedGainInput .. "]" .. "was changed to ".. propertyValue)
+	LogTrace("Gain for ".. "[" .. gSelectedGainInput .. "]" .. " was changed to ".. propertyValue)
 	if(gSelectedGainInput == -1) then return end
 	SET_GAIN_LEVEL(gSelectedGainInput, tonumber(propertyValue))
 end
@@ -899,6 +912,11 @@ package.preload['shared.proxy_commands'] = (function (...)
 ===============================================================================]]
 
 
+function DISCONNECT_OUTPUT(output, class, output_id)
+	local command;
+	command = "DL2O" .. tostring(output + 1) .. "T"
+	SendToTransport(command)
+end
 function SET_INPUT(idBinding, output, input, input_id, class, output_id, bSwitchSeparate, bVideo, bAudio)
 	 if (gAVSwitchProxy._PreviouslySelectedInput[output] == input) then return end
 	ROUTE(input, output)
@@ -907,14 +925,14 @@ end
 function ROUTE(input, output)
 	local command;
 	gOutputToInputMap[output] = input
-	command = "CL2I"..string.format( "%d",input ).."O".. string.format( "%d", output).."T"
+	command = "CL2I"..string.format( "%d",input + 1 ).."O".. string.format( "%d", output + 1).."T"
 	SendToTransport(command)
 	proxyFeedbackRoutingState(3000 + input,4000 + output)
 end
 
 function MUTE_OFF(output)
 	local command
-	command = "CL2O"..tostring(output).."VUT"
+	command = "CL2O"..tostring(output + 1).."VUT"
 	SendToTransport(command)
 	gOutputMute[output]=false
 	GET_VOLUME_LEVEL(output)
@@ -922,7 +940,7 @@ end
 
 function MUTE_ON(output)
 	local command
-	command = "CL2O"..tostring(output).."VMT"
+	command = "CL2O"..tostring(output + 1).."VMT"
 	SendToTransport(command)		
 	gOutputMute[output]=true
 	GET_VOLUME_LEVEL(output)
@@ -937,20 +955,18 @@ function MUTE_TOGGLE(output)
 end
 
 function SET_GAIN_LEVEL(input, c4VolumeLevel)
-	local minDeviceLevel = MIN_GAIN_LEVEL
-	local maxDeviceLevel = MAX_GAIN_LEVEL
-	local deviceGainLevel = ConvertVolumeToDevice(c4VolumeLevel, minDeviceLevel, maxDeviceLevel)*10
+	local deviceGainLevel = c4VolumeLevel*10
 	LogInfo('deviceGainLevel: ' .. deviceGainLevel)
-	local command = "CL2I".. tostring(input).."VA"..tostring(deviceGainLevel).."T"
+	local command = "CL2I".. tostring(input + 1).."VA"..tostring(deviceGainLevel).."T"
 	SendToTransport(command)
 end
 function GET_GAIN_LEVEL(input)
-	local command = "SL2I".. tostring(input).."VT"
+	local command = "SL2I".. tostring(input + 1).."VT"
 	SendToTransport(command)
 end
 
 function SetVolumeCommand(output, volume)
-    return "CL2O".. tostring(output).."VA"..tostring(volume*10).."T"
+    return "CL2O".. tostring(output+1).."VA"..tostring(volume*10).."T"
 end
 
 function SET_VOLUME_LEVEL(output, c4VolumeLevel)
@@ -962,7 +978,7 @@ function SET_VOLUME_LEVEL(output, c4VolumeLevel)
 	SendToTransport(command)
 end
 function GET_VOLUME_LEVEL(output)
-	local command = "SL2O"..tostring(output).."VT"
+	local command = "SL2O"..tostring(output+1).."VT"
 	SendToTransport(command)
 end
 
@@ -972,52 +988,52 @@ function SET_VOLUME_LEVEL_DEVICE(output, deviceVolumeLevel)
 end
 
 function PULSE_VOL_DOWN(output)
-	local command = "CL2O"..tostring(output).."VS-T"
+	local command = "CL2O"..tostring(output+1).."VS-T"
 	SendToTransport(command)
 	GetDeviceVolumeStatus(output)
 end
 
 function PULSE_VOL_UP(output)
-	local command = "CL2O"..tostring(output).."VS+T"	
+	local command = "CL2O"..tostring(output+1).."VS+T"	
 	SendToTransport(command)
 	GetDeviceVolumeStatus(output)
 end
 
 function GetDeviceVolumeStatus(output)
     LogTrace("GetDeviceVolumeStatus(), output = " .. output)
-	local command = "SL2O"..tostring(output).."VT"
+	local command = "SL2O"..tostring(output+1).."VT"
 	SendToTransport(command)
 end
 
 function GET_INPUT(output)
-    SendToTransport("GET_INPUT", "SL2O".. string.format( "%d", output).."T")
+    SendToTransport("GET_INPUT", "SL2O".. string.format( "%d", output+1).."T")
 end
 
 function SET_BASS_LEVEL(output, c4Level)
 	local minDeviceLevel = MIN_EQ_LEVEL
 	local maxDeviceLevel = MAX_EQ_LEVEL
-	local deviceEqLevel = ConvertVolumeToDevice(c4Level, minDeviceLevel, maxDeviceLevel) / 2
+	local deviceEqLevel = ConvertVolumeToDevice(c4Level, minDeviceLevel, maxDeviceLevel) / 2 * 10
 	LogTrace('deviceEqLevel: ' .. deviceEqLevel)
-	local command = "CL2O"..tostring(output).."F1G"..tostring(deviceEqLevel).."T"
+	local command = "CL2O"..tostring(output+1).."F1G"..tostring(deviceEqLevel).."T"
 	SendToTransport(command)
 end
 
 function GET_BASS_LEVEL(output)
-	local command = "SL2O"..tostring(output).."F1T"
+	local command = "SL2O"..tostring(output+1).."F1T"
 	SendToTransport(command)
 end
 
 function SET_TREBLE_LEVEL(output, c4Level)
 	local minDeviceLevel = MIN_EQ_LEVEL
 	local maxDeviceLevel = MAX_EQ_LEVEL
-	local deviceEqLevel = ConvertVolumeToDevice(c4Level, minDeviceLevel, maxDeviceLevel) / 2
+	local deviceEqLevel = (ConvertVolumeToDevice(c4Level, minDeviceLevel, maxDeviceLevel) / 2) * 10
 	LogTrace('deviceEqLevel: ' .. deviceEqLevel)
-	local command = "CL2O"..tostring(output).."F3G"..tostring(deviceEqLevel).."T"
+	local command = "CL2O"..tostring(output+1).."F3G"..tostring(deviceEqLevel).."T"
 	SendToTransport(command)
 end
 
 function GET_TREBLE_LEVEL(output)
-	local command = "SL2O"..tostring(output).."F3T"
+	local command = "SL2O"..tostring(output+1).."F3T"
 	SendToTransport(command)
 end
 
@@ -1026,17 +1042,17 @@ function SET_BALANCE_LEVEL(output, c4Level)
 	local maxDeviceLevel = MAX_BALANCE_LEVEL
 	local deviceBalanceLevel = ConvertVolumeToDevice(c4Level, minDeviceLevel, maxDeviceLevel) 
 	LogTrace('deviceBalanceLevel: ' .. deviceBalanceLevel)
-	local command = "CL2O"..tostring(output).."P"..tostring(deviceBalanceLevel).."T"
+	local command = "CL2O"..tostring(output+1).."P"..tostring(deviceBalanceLevel).."T"
 	SendToTransport(command)
 end
 
 function GET_BALANCE_LEVEL(output)
-	local command = "SL2O"..tostring(output).."PT"
+	local command = "SL2O"..tostring(output+1).."PT"
 	SendToTransport(command)
 end
 
 function GET_BALANCE_LEVEL(output)
-	local command = "SL2O"..tostring(output).."PT"
+	local command = "SL2O"..tostring(output+1).."PT"
 	SendToTransport(command)
 end
 
@@ -1046,12 +1062,12 @@ function SET_EQ_LEVEL(output, bands)
 		deviceEqLevel = deviceEqLevel .. tostring(bands[i] * 10) .. " "
 	end
 	LogTrace('deviceEqLevel: ' .. deviceEqLevel)
-	local command = "CL2O"..tostring(output).."E1 2 3 4 5 6 7 8 9 10G"..deviceEqLevel.."T"
+	local command = "CL2O"..tostring(output+1).."E1 2 3 4 5 6 7 8 9 10G"..deviceEqLevel.."T"
 	SendToTransport(command)
 end
 
 function GET_EQ_LEVEL(output)
-	local command = "SL2O"..tostring(output).."E1 2 3 4 5 6 7 8 9 10T"
+	local command = "SL2O"..tostring(output+1).."E1 2 3 4 5 6 7 8 9 10T"
 	SendToTransport(command)
 end
 

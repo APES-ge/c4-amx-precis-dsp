@@ -12,7 +12,9 @@ changeGeneralErrorPattern =  "(.*X)"
 errorPattern =  "(E%d*)"
 warningPattern =  "(E%d*)"
 readyPattern = "Ready"
+setDisconnectedPattern = "DL2O(%d*)T"
 setRoutingSucceedPattern =  "CL2I(%d*)O(%d*)T"
+getRoutingDisconnectedPattern = "SL2O(%d*)T%( %)"
 getRoutingSucceedPattern =  "SL2O(%d*)T%( (%d*) %)"
 setVolumeSucceedPattern =  "CL2O(%d*)VA(-?%d*)T"
 getVolumeSucceedPattern =  "SL2O(%d*)VT%( (-?%d*) %)"
@@ -65,34 +67,42 @@ function HandleMessage(message)
 		LogWarn("Command general error ".. message)
 	elseif(message:find(readyPattern)) then
 		PollStatus()
+	elseif(message:find(setDisconnectedPattern)) then
+		LogDebug("Found disconnected pattern")
+		local  o = message:match(setDisconnectedPattern)
+		proxyFeedbackRoutingState(-1 , 3999 + o)
 	elseif(message:find(setRoutingSucceedPattern)) then
 		LogDebug("Found routing succeed pattern")
 		local  i, o = message:match(setRoutingSucceedPattern)
-		proxyFeedbackRoutingState(3000 + i, 4000 + o)
+		proxyFeedbackRoutingState(2999 + i, 3999 + o)
+	elseif(message:find(getRoutingDisconnectedPattern)) then
+		LogDebug("Found routing disconnected feedback pattern")
+		local  o = message:match(getRoutingDisconnectedPattern)
+		proxyFeedbackRoutingState(-1 , 3999 + o)
 	elseif(message:find(getRoutingSucceedPattern)) then
 		LogDebug("Found routing feedback pattern")
-		local  i, o = message:match(getRoutingSucceedPattern)
-		proxyFeedbackRoutingState(3000 + i, 4000 + o)
+		local  o, i = message:match(getRoutingSucceedPattern)
+		proxyFeedbackRoutingState(2999 + i, 3999 + o)
 	elseif(message:find(setVolumeSucceedPattern)) then
 		LogDebug("Found volume succeed pattern")
 		local  o, v = message:match(setVolumeSucceedPattern)
-		proxyFeedbackVolumeState(4000 + o, v)
+		proxyFeedbackVolumeState(3999 + o, v)
 	elseif(message:find(getVolumeMutedPattern)) then
 		LogDebug("Found volume muted feedback pattern")
 		local  o = message:match(getVolumeMutedPattern)
-		proxyFeedbackVolumeMuted(o, true)
+		proxyFeedbackVolumeMuted(3999 + o, true)
 	elseif(message:find(getVolumeSucceedPattern)) then
 		LogDebug("Found volume feedback pattern")
 		local  o, v = message:match(getVolumeSucceedPattern)
-		proxyFeedbackVolumeState(4000 + o, v)
+		proxyFeedbackVolumeState(3999 + o, v)
 	elseif(message:find(setGainSucceedPattern)) then
 		LogDebug("Found gain succeed pattern")
 		local  i, v = message:match(setGainSucceedPattern)
-		proxyFeedbackGainState(i, v)
+		proxyFeedbackGainState(i-1, v)
 	elseif(message:find(getGainSucceedPattern)) then
 		LogDebug("Found gain feedback pattern")
 		local  i, v = message:match(getGainSucceedPattern)
-		proxyFeedbackGainState(i, v)
+		proxyFeedbackGainState(i-1, v)
 	elseif(message:find(getEqPattern)) then
 		LogDebug("Found EQ feedback pattern")
 		local o, e32, e64, e125, e250,e500,e1k,e2k,e4k,e8k,e16k = message:match(getEqPattern)
@@ -108,27 +118,27 @@ function HandleMessage(message)
 	elseif(message:find(setBassPattern)) then
 		LogDebug("Found set bass succeed pattern")
 		local o, v = message:match(setBassPattern)
-		proxyBassState(o,v)
+		proxyBassState(o-1,v)
 	elseif(message:find(getBassPattern)) then
 		LogDebug("Found set bass succeed pattern")
 		local o, v = message:match(getBassPattern)
-		proxyBassState(o,v)
+		proxyBassState(o-1,v)
 	elseif(message:find(setTreblePattern)) then
 		LogDebug("Found set treble succeed pattern")
 		local o, v = message:match(setTreblePattern)
-		proxyTrebleState(o,v)
+		proxyTrebleState(o-1,v)
 	elseif(message:find(getTreblePattern)) then
 		LogDebug("Found get treble succeed pattern")
 		local o, v = message:match(getTreblePattern)
-		proxyTrebleState(o,v)
+		proxyTrebleState(o-1,v)
 	elseif(message:find(setPanPattern)) then
 		LogDebug("Found set pan succeed pattern")
 		local o, v = message:match(setPanPattern)
-		proxyPanState(o,v)
+		proxyPanState(o-1,v)
 	elseif(message:find(setPanPattern)) then
 		LogDebug("Found get pan succeed pattern")
 		local o, v = message:match(setPanPattern)
-		proxyPanState(o,v)
+		proxyPanState(o-1,v)
 	end
 end
 
@@ -153,7 +163,7 @@ end
 function proxyBassState(output_id, volume)
 	local minDeviceLevel = MIN_EQ_LEVEL
 	local maxDeviceLevel = MAX_EQ_LEVEL
-	local scaledVolume = volume / 20
+	local scaledVolume = (volume * 2) / 10
 	local c4VolumeLevel = ConvertVolumeToC4(scaledVolume, minDeviceLevel, maxDeviceLevel) 	 
 	gAVSwitchProxy:dev_BassLevelChanged(output_id, c4VolumeLevel)
 end
@@ -161,7 +171,7 @@ end
 function proxyTrebleState(output_id, volume)
 	local minDeviceLevel = MIN_EQ_LEVEL
 	local maxDeviceLevel = MAX_EQ_LEVEL
-	local scaledVolume = volume / 20
+	local scaledVolume = (volume * 2) / 10
 	local c4VolumeLevel = ConvertVolumeToC4(scaledVolume, minDeviceLevel, maxDeviceLevel) 	 
 	gAVSwitchProxy:dev_TrebleLevelChanged(output_id, c4VolumeLevel)
 end
@@ -169,8 +179,9 @@ end
 function proxyPanState(output_id, volume)
 	local minDeviceLevel = MIN_BALANCE_LEVEL
 	local maxDeviceLevel = MAX_BALANCE_LEVEL
-	local scaledVolume = volume / 10
-	local c4VolumeLevel = ConvertVolumeToC4(scaledVolume, minDeviceLevel, maxDeviceLevel) 	 
+	-- local scaledVolume = volume / 10
+	-- local c4VolumeLevel = ConvertVolumeToC4(scaledVolume, minDeviceLevel, maxDeviceLevel) 	 
+	local c4VolumeLevel = ConvertVolumeToC4(volume, minDeviceLevel, maxDeviceLevel) 	 
 	gAVSwitchProxy:dev_BalanceLevelChanged(output_id, c4VolumeLevel)
 end
 
